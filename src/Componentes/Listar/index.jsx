@@ -1,78 +1,74 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import './style.css'
-import Filtro from '../filtros';
+import './style.css';
 
 function Listar() {
-
   const [data, setData] = useState([]);
-  const navigate = useNavigate();
   const [busqueda, setBusqueda] = useState('');
-  const [tipoSeleccionado, setTipoSeleccionado] = useState('All');
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerDatos = async () => {
-      if (tipoSeleccionado === 'All') {
-        const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1025");
+      let starships = [];
+      let url = "https://swapi.dev/api/starships/";
+
+      // SWAPI entrega datos paginados, así que hacemos un loop
+      while (url) {
+        const res = await fetch(url);
         const json = await res.json();
-        setData(json.results);
-      } else {
-        const res = await fetch(`https://pokeapi.co/api/v2/type/${tipoSeleccionado}`);
-        const json = await res.json();
-        const listaFiltrada = json.pokemon.map(p => p.pokemon);
-        setData(listaFiltrada);
+        starships = [...starships, ...json.results];
+        url = json.next;
       }
+
+      setData(starships);
     };
 
     obtenerDatos();
-  }, [tipoSeleccionado]);
+  }, []);
 
-  const handleTipoChange = (tipo) => {
-    setTipoSeleccionado(tipo);
-  };
-
+  // Filtro por nombre
   let resultados = data;
-
-  if (busqueda.length >= 3 && isNaN(busqueda)) {
-    resultados = data.filter(pokemon =>
-      pokemon.name.toLowerCase().includes(busqueda.toLowerCase())
-    );
-  }
-  
-  if (!isNaN(busqueda)) {
-    resultados = data.filter(pokemon =>
-      pokemon.url.includes('/' + busqueda)
+  if (busqueda.length >= 2) {
+    resultados = data.filter(starship =>
+      starship.name.toLowerCase().includes(busqueda.toLowerCase())
     );
   }
 
- return (
+  return (
     <>
-        <input
+      <input
         type="text"
-        placeholder="Buscar Pokémon"
+        placeholder="Buscar nave"
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
         className="c-buscador"
       />
 
-    <Filtro onTipoChange={handleTipoChange} />
-  <section className='c-lista'>
+      <section className='c-lista'>
+        {resultados.map((starship, index) => {
+          const id = starship.url.split('/').filter(Boolean).pop();
 
-      {resultados.map((pokemon, index) => (
-        <div className='c-lista-pokemon'
-        onClick={() => navigate(`/detalle/${pokemon.name}`)}
-        key={index}>
-          <p>{pokemon.url.split("/")[6]}</p>
-          <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.url.split("/")[6]}.png`} 
-                alt={`Pokémon ${pokemon.name}`} width='auto' height='60' loading='lazy'
+          return (
+            <div
+              className='c-lista-pokemon'
+              onClick={() => navigate(`/detalle/${id}`)}
+              key={index}
+            >
+              <p>{id}</p>
+              <img
+                src={`https://starwars-visualguide.com/assets/img/starships/${id}.jpg`}
+                alt={`Nave: ${starship.name}`}
+                width="auto"
+                height="60"
+                loading="lazy"
               />
-          <p>{pokemon.name}</p>
-        </div>
-      ))}
-    </section>
-      </>
-  )
+              <p>{starship.name}</p>
+            </div>
+          );
+        })}
+      </section>
+    </>
+  );
 }
 
-export default Listar
+export default Listar;

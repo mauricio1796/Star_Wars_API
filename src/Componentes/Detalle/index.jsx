@@ -1,38 +1,30 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom"; 
-import './style.css'
+import './style.css';
 
 function Detalle() {
-  const { name } = useParams(); 
-  const [datapoke, setDatapoke] = useState([]);
+  const { id } = useParams(); 
+  const [starship, setStarship] = useState(null);
 
   useEffect(() => {
-    fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
+    fetch(`https://swapi.dev/api/starships/${id}/`)
       .then(response => response.json())
-      .then(responseData => setDatapoke(responseData))
+      .then(data => setStarship(data))
       .catch(error => console.error("Error:", error));
-  }, [name]); 
+  }, [id]); 
 
-  if (!datapoke) return <p>Cargando...</p>;
- return (
-    
-    <div>
-      <img 
-        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${datapoke.id}.png`} 
-        alt={datapoke.name} 
-        width="200"
-      />
+  if (!starship) return <p>Cargando...</p>;
 
-        <p>{datapoke.name}</p>
-        <p>{datapoke.id}</p>
-        <p>Altura: {datapoke.height/ 10} m / Peso: {datapoke.weight/ 10} km</p>
-
-
-
-    
+  return (
+    <div className="detalle">
+      <h2>{starship.name}</h2>
+      <p><strong>Modelo:</strong> {starship.model}</p>
+      <p><strong>Fabricante:</strong> {starship.manufacturer}</p>
+      <p><strong>Clase:</strong> {starship.starship_class}</p>
+      <p><strong>Pasajeros:</strong> {starship.passengers}</p>
+      <p><strong>Velocidad máxima (MGLT):</strong> {starship.MGLT}</p>
     </div>
-      
-  )
+  );
 }
 
-export default Detalle
+export default Detalle;
