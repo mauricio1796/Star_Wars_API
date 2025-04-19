@@ -1,17 +1,18 @@
-import "./style.css"
 import { Link } from 'react-router-dom';
-
+import './style.css'; // archivo de estilos
 
 function Menu() {
-    return (
-        <nav className="c-menu">
-          <Link to="/">Lista</Link>
-          <Link to="/capturados">Capturados</Link>
-          <Link to="/aleatorios">Aleatorio</Link>
-          <Link to="/usuarios">Usuarios</Link>
-          <Link to="/favoritos">Favoritos</Link>
-        </nav>
-    )
-  }
- 
-  export default Menu
+  return (
+    <nav className="navbar">
+      <h1 className="logo">🌌 Star Wars Explorer</h1>
+      <ul className="nav-links">
+        <li><Link to="/personajes">Personajes</Link></li>
+        <li><Link to="/naves">Naves</Link></li>
+        <li><Link to="/planetas">Planetas</Link></li>
+        <li><Link to="/vehiculos">Vehículos</Link></li>
+      </ul>
+    </nav>
+  );
+}
+
+export default Menu;
